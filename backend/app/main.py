@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 
 # Load environment variables before any other imports
@@ -11,11 +12,19 @@ if "HF_HOME" not in os.environ:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import router as api_router
+from app.core.database import init_db
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize the database and create tables
+    await init_db()
+    yield
 
 app = FastAPI(
     title="YouTube RAG Insights API",
     description="Backend API for interacting with YouTube transcripts using RAG",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Configure CORS for the Next.js frontend

@@ -55,3 +55,21 @@ class RAGChainManager:
             "answer": answer_chain,
             "docs": lambda x: x["docs"]
         })
+
+    async def generate_title(self, chunks: List[Any]) -> str:
+        """
+        Generates a 3-5 word catchy title based on the first few chunks of the transcript.
+        """
+        model = self._get_model()
+        # Take first 3 chunks to understand context
+        context = "\n".join([c.page_content for c in chunks[:3]])
+        
+        prompt = f"""
+        Based on the following YouTube video transcript snippet, generate a catchy, 3-5 word title for the chat session.
+        Snippet: {context}
+        
+        Respond ONLY with the generated title. No quotes, no prefix.
+        """
+        
+        response = await model.ainvoke(prompt)
+        return response.content.strip()

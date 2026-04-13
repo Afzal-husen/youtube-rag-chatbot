@@ -1,35 +1,35 @@
 # Project State
 
 ## Current Position
-- **Phase**: Phase 3: Advanced RAG Features (COMPLETE)
-- **Task**: Handoff to Phase 4: Persistence & History
-- **Status**: Completed (2026-04-13 20:45 IST)
+- **Phase**: Phase 4: Persistence & History (COMPLETE)
+- **Task**: Handoff to Phase 5: Polish & Deployment Ready
+- **Status**: Completed (2026-04-13 20:53 IST)
 
 ## Last Session Summary
-- Refactored `IngestionManager` to preserve segment-level timestamps (`start`, `duration`).
-- Enhanced `RAGChainManager` to return both AI answers and source documents.
-- Implemented real-time streaming with FastAPI's `StreamingResponse` and Server-Sent Events (SSE).
-- Updated Frontend to support streaming chunks and dual model switching (Gemini Flash vs Pro).
-- Implemented a "typewriter" effect and interactive citation chips (jumping to timestamps).
+- Integrated SQLite with SQLAlchemy (Async) for local data persistence.
+- Implemented AI-powered title generation (Gemini generates a catchy 3-5 word name for every new session).
+- Developed a full session management suite: History fetching, Session renaming, and Hard deletion (including vector cleanup).
+- Refactored the UI Sidebar to dynamically load and manage these sessions via Dialogs and DropdownMenus.
+- Resolved TypeScript build errors related to `@base-ui` component prop patterns.
 
 ## Active Context
-- 🚀 Advanced RAG features are fully functional and build-verified.
+- 🚀 The application is now fully stateful. Chat history, session names, and indexed videos survive browser restarts.
 - **Blocked**: None.
-- **Verification**: `npm run build` passed successfully. End-to-end streaming verified via code logic.
+- **Verification**: `npm run build` passed successfully. Database initialization verified.
 
 ## Context Dump
 ### Decisions Made
-- **Streaming Protocol**: Used SSE (Server-Sent Events) for a lightweight, one-way stream from backend to frontend.
-- **Metadata preservation**: Successfully preserved timestamps by creating segment-based documents before vector indexing.
-- **UI UX**: Added a "Zap" (Flash) and "Brain" (Pro) model switcher in the header for power users.
+- **Naming Strategy**: AI Titles are generated immediately after the final chunk of indexing is saved, providing professional-looking sessions.
+- **Cleanup Policy**: Deleting a session via the UI now triggers a `shutil.rmtree` on the corresponding FAISS index folder.
+- **UI Interaction**: Used a unified "Actions" menu in the sidebar for a clean, professional aesthetic.
 
 ### Files of Interest
-- `backend/app/api/endpoints.py`: `/chat-stream` logic.
-- `frontend/src/app/page.tsx`: Streaming loop and state management.
-- `frontend/src/components/source-chips.tsx`: Citation UI.
+- `backend/app/core/db_models.py`: Database schema.
+- `backend/app/api/endpoints.py`: History and CRUD logic.
+- `frontend/src/components/app-sidebar.tsx`: Dynamic session management.
 
 ## Next Steps
-1. Initialize Phase 4: Persistence & History.
-2. Implement **User History** (storing chat loops in a local DB like SQLite or JSON).
-3. Implement **Multi-Video Context** (allowing chat across multiple previously indexed videos).
-4. Add **Export** feature (save chat as Markdown/PDF).
+1. Initialize Phase 5: Polish & Deployment Ready.
+2. Implement **Deployment Configuration** (Dockerizing backend/frontend).
+3. Final **Visual Polish** (Transitions, loading states refinements).
+4. Add **README.md** and documentation.

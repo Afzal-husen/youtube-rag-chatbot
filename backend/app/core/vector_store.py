@@ -1,4 +1,5 @@
 import os
+import shutil
 from typing import Optional
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -49,3 +50,11 @@ class VectorStoreManager:
         path = self.get_index_path(video_id)
         vector_store.save_local(path)
         return vector_store
+
+    def delete_index(self, video_id: str):
+        """
+        Physically removes the FAISS index directory from disk.
+        """
+        path = self.get_index_path(video_id)
+        if os.path.exists(path):
+            shutil.rmtree(path)

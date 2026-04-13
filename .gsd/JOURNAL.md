@@ -1,26 +1,25 @@
 # JOURNAL.md
 
-## Session: 2026-04-13 20:03
+## Session: 2026-04-13 20:45
 
 ### Objective
-Complete Phase 2: Premium Dashboard (Frontend).
+Complete Phase 3: Advanced RAG Features (Streaming & Citations).
 
 ### Accomplished
-- ✅ Initialized Next.js 15 + Shadcn UI + Tailwind v4.
-- ✅ Implemented Premium Dashboard layout with glassmorphism and animated Sidebar.
-- ✅ Built functional Chat Interface with Framer Motion.
-- ✅ Integrated `/api/process-url` and `/api/chat` backend endpoints.
-- ✅ Resolved Lucide icon versioning and Shadcn `Base UI` prop breaking changes.
+- ✅ Refactored ingestion to be timestamp-aware.
+- ✅ Implemented RAG streaming logic using LangChain's `astream`.
+- ✅ Created `/chat-stream` API with SSE support.
+- ✅ Implemented typewriter effect and citation chips in the frontend.
+- ✅ Added Gemini Flash/Pro toggle for dynamic model switching.
 
 ### Verification
-- [x] Initial build success.
-- [x] TypeScript validation success.
-- [x] Route rendering success (Static & Dynamic).
+- [x] Production build success in the frontend.
+- [x] Backend endpoint correctly yields JSON chunks.
+- [x] Citation chips correctly display formatted timestamps (e.g., 12:34).
 
 ### Paused Because
 Phase Completion.
 
 ### Handoff Notes
-The project now has a beautiful, production-ready frontend. It communicates with the FastAPI backend successfully. 
-**Developer Note**: When adding new icons, check if they are available in the installed `lucide-react` version or use `Play` as a fallback. 
-Phase 3 is up next: Advanced RAG features (Streaming and Citations).
+The chatbot is now significantly more powerful. It feels "alive" with streaming and provides hard evidence with timestamped citations. 
+**Next Goal**: Phase 4 focuses on Persistence. We need to save these conversations so they don't disappear on refresh.

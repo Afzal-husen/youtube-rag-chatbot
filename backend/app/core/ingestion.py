@@ -24,28 +24,37 @@ class IngestionManager:
     def load_and_split(self, url: str) -> List[Document]:
         """
         Loads the transcript for a video and splits it into chunks.
+        Preserves segment-level metadata (timestamps).
         """
         video_id = self.extract_video_id(url)
         try:
             api = youtube_transcript_api.YouTubeTranscriptApi()
             transcript_list = api.fetch(video_id)
-            full_text = " ".join([item.text for item in transcript_list])
             
-            # Create a LangChain document
-            doc = Document(
-                page_content=full_text,
-                metadata={"source": video_id, "url": url}
-            )
+            # Create a list of documents, one for each segment
+            # This ensures that when we split, each chunk retains the timestamp metadata
+            documents = [
+                Document(
+                    page_content=item['text'],
+                    metadata={
+                        "source": video_id, 
+                        "url": url,
+                        "start": item['start'],
+                        "duration": item['duration']
+                    }
+                )
+                for item in transcript_list
+            ]
             
-            # Split into chunks
-            chunks = self.splitter.split_documents([doc])
+            # Split into chunks (LangChain splitters preserve metadata)
+            chunks = self.splitter.split_documents(documents)
             return chunks
         except Exception as e:
             raise Exception(f"Failed to fetch transcript: {str(e)}")
 
     def get_video_metadata(self, url: str) -> Dict[str, Any]:
         """
-        Returns basic metadata (YouTube API v3 or scrapers would be needed for more).
+        Returns basic metadata.
         """
         video_id = self.extract_video_id(url)
         return {

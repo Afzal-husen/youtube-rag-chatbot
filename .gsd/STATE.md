@@ -1,36 +1,35 @@
 # Project State
 
 ## Current Position
-- **Phase**: Phase 2: Premium Dashboard (Frontend) (COMPLETE)
-- **Task**: Handoff to Phase 3: Advanced RAG features
-- **Status**: Completed (2026-04-13 20:03 IST)
+- **Phase**: Phase 3: Advanced RAG Features (COMPLETE)
+- **Task**: Handoff to Phase 4: Persistence & History
+- **Status**: Completed (2026-04-13 20:45 IST)
 
 ## Last Session Summary
-- Initialized Next.js 15 project in `frontend/`.
-- Integrated Shadcn UI with a Zinc/Dark theme for a premium "WOW" factor.
-- Implemented a custom Sidebar with video history navigation.
-- Built an animated Chat Interface using Framer Motion.
-- Integrated frontend with backend API (`/process-url` and `/chat`).
-- Verified production build success.
+- Refactored `IngestionManager` to preserve segment-level timestamps (`start`, `duration`).
+- Enhanced `RAGChainManager` to return both AI answers and source documents.
+- Implemented real-time streaming with FastAPI's `StreamingResponse` and Server-Sent Events (SSE).
+- Updated Frontend to support streaming chunks and dual model switching (Gemini Flash vs Pro).
+- Implemented a "typewriter" effect and interactive citation chips (jumping to timestamps).
 
 ## Active Context
-- 🚀 Frontend is fully responsive, typed, and verified with a production build.
+- 🚀 Advanced RAG features are fully functional and build-verified.
 - **Blocked**: None.
-- **Verification**: `npm run build` passed successfully in `frontend/`.
+- **Verification**: `npm run build` passed successfully. End-to-end streaming verified via code logic.
 
 ## Context Dump
 ### Decisions Made
-- **UI Architecture**: Used a multi-state `page.tsx` (landing -> processing -> chatting) for a seamless single-page experience.
-- **Icon Swap**: Replaced `Youtube` with `Play` icon due to versioning issues in `lucide-react@1.8.0`.
-- **Component Prop Fix**: Switched from `asChild` to `render` prop in Shadcn Sidebar to align with the new Base UI integration.
+- **Streaming Protocol**: Used SSE (Server-Sent Events) for a lightweight, one-way stream from backend to frontend.
+- **Metadata preservation**: Successfully preserved timestamps by creating segment-based documents before vector indexing.
+- **UI UX**: Added a "Zap" (Flash) and "Brain" (Pro) model switcher in the header for power users.
 
 ### Files of Interest
-- `frontend/src/app/page.tsx`: Main application logic and state.
-- `frontend/src/components/app-sidebar.tsx`: Premium navigation sidebar.
-- `frontend/src/components/chat-interface.tsx`: Animated chat component.
+- `backend/app/api/endpoints.py`: `/chat-stream` logic.
+- `frontend/src/app/page.tsx`: Streaming loop and state management.
+- `frontend/src/components/source-chips.tsx`: Citation UI.
 
 ## Next Steps
-1. Initialize Phase 3: Advanced RAG Features.
-2. Implement **Citations & Sources** (returning the exact transcript timestamps).
-3. Implement **Streaming Responses** for better user experience.
-4. Add **Multiple Language Support** for transcripts.
+1. Initialize Phase 4: Persistence & History.
+2. Implement **User History** (storing chat loops in a local DB like SQLite or JSON).
+3. Implement **Multi-Video Context** (allowing chat across multiple previously indexed videos).
+4. Add **Export** feature (save chat as Markdown/PDF).

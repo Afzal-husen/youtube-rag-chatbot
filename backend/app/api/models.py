@@ -15,6 +15,7 @@ class ProcessUrlResponse(BaseModel):
 class ChatRequest(BaseModel):
     video_id: str
     question: str
+    model_name: Optional[str] = "gemini-1.5-flash"
 
 class ChatResponse(BaseModel):
     answer: str

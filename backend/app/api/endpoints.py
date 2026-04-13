@@ -82,6 +82,8 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
             {"content": doc.page_content, "metadata": doc.metadata} 
             for doc in result["docs"]
         ]
+
+        print(sources)
         
         # Persist messages
         user_msg = ChatMessage(video_id=request.video_id, role="user", content=request.question)
@@ -116,6 +118,7 @@ async def chat_stream(request: ChatRequest, db: AsyncSession = Depends(get_db)):
                 {"content": doc.page_content, "metadata": doc.metadata} 
                 for doc in source_docs
             ]
+            print(sources)
             yield f"data: {json.dumps({'type': 'sources', 'data': sources})}\n\n"
 
             # Stream answer

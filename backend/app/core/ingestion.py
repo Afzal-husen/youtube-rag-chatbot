@@ -35,12 +35,12 @@ class IngestionManager:
             # This ensures that when we split, each chunk retains the timestamp metadata
             documents = [
                 Document(
-                    page_content=item['text'],
+                    page_content=item.text,
                     metadata={
                         "source": video_id, 
                         "url": url,
-                        "start": item['start'],
-                        "duration": item['duration']
+                        "start": item.start,
+                        "duration": item.duration
                     }
                 )
                 for item in transcript_list

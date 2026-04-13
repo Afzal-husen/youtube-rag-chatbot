@@ -2,8 +2,10 @@ import os
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 
-# Load environment variables before any other imports
-load_dotenv()
+# Load environment variables — search from backend dir up to project root
+from pathlib import Path
+_env_path = Path(__file__).parent.parent.parent / ".env"
+load_dotenv(dotenv_path=_env_path)
 
 # Set HuggingFace cache folder if not set
 if "HF_HOME" not in os.environ:

@@ -22,3 +22,20 @@
 **Context**: We need a "premium" UI.
 **Decision**: Use **Next.js (App Router)** with **Tailwind CSS**.
 **Rationale**: Fastest development for high-quality, modern web apps.
+
+## Phase 1 Decisions
+
+**Date:** 2026-04-13
+
+### Scope
+- Full refactor of `main.py` into a modular `backend/` directory structure.
+- Root `main.py` will be removed once the refactor is validated.
+
+### Approach
+- Chose: **Option A (Clean Slate Monorepo)**.
+- Reason: Simplifies the project structure and avoids cluttering the root with legacy files.
+- FAISS Naming: Use sanitized `video_id` as the directory name in `backend/storage/`.
+
+### Constraints
+- Acceptable to use `allow_dangerous_deserialization=True` for local FAISS loading as the environment is private and controlled.
+- Storage path set to `backend/storage/`.

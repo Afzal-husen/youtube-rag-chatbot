@@ -1,50 +1,43 @@
 # Project State
 
 ## Current Position
-- **Phase**: Phase 1: Foundation & Backend Refactoring
-- **Task**: Verify ingestion and chat loop via API
-- **Status**: Paused at 2026-04-13 19:10 (IST) due to persistent debugging blockers.
+- **Phase**: Phase 1: Foundation & Backend Refactoring (COMPLETE)
+- **Task**: Handoff to Phase 2: Premium Dashboard (Frontend)
+- **Status**: Paused at 2026-04-13 19:46 IST
 
 ## Last Session Summary
-- Fully refactored monolithic `main.py` into a modular FastAPI backend in `backend/`.
-- Implemented `IngestionManager`, `VectorStoreManager`, and `RAGChainManager`.
-- Established persistent FAISS storage in `backend/storage/`.
-- Created robust API endpoints with Pydantic models.
-- Resolved environment variable loading order issues.
+- Successfully modularized the backend into a FastAPI service.
+- Implemented persistent vector storage and verified the RAG loop using Gemini 1.5.
+- Cleaned up legacy monolithic files.
+- Started research for the Next.js frontend setup.
 
 ## In-Progress Work
-- The backend is functional but ingestion is failing during verification.
-- **Files modified**: 
-    - `backend/app/main.py`: Entry point fixed for `.env` loading.
-    - `backend/app/api/endpoints.py`: Added debug logging and traceback.
-    - `backend/app/core/ingestion.py`: Refactored to use `YouTubeTranscriptApi` directly.
-- **Tests status**: FAILED (AttributeError in transcript fetch).
+- Ready to initialize the Next.js frontend application.
+- Researching non-interactive `create-next-app` and `shadcn` initialization flags.
 
 ## Blockers
-- `AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'` inside `ingestion.py`.
-- Discrepancy between shell execution (working) and script execution (failing).
+- None.
 
 ## Context Dump
 ### Decisions Made
-- **Modularization**: Split logic into `core/` and `api/` for better maintainability.
-- **Direct API Over Loader**: Switched to `YouTubeTranscriptApi` directly to avoid `pytube` 400 errors found in `YoutubeLoader`.
+- **Monorepo Structure**: Keep `backend/` for FastAPI and create `frontend/` for Next.js.
+- **LLM Provider**: Standardized on **Gemini** (Gemini-Flash-Latest) due to Groq 403 errors and limited Gemini 2.0 free tier quota.
+- **UI Framework**: Next.js 14/15 + Shadcn UI + Framer Motion for a "premium" feel.
 
 ### Approaches Tried
-- **Approach 1**: `YoutubeLoader` with `add_video_info=True`. Result: 400 Bad Request (pytube issue).
-- **Approach 2**: `YouTubeTranscriptApi.get_transcript(video_id, languages=['en', 'hi'])`. Result: 400 Bad Request (Language mismatch).
-- **Approach 3**: `YouTubeTranscriptApi.get_transcript(video_id)` (static call). Result: AttributeError (Library version issue?).
+- **Groq Integration**: Attempted, but blocked by persistent `403 Access Denied`.
+- **Gemini 2.0 Flash**: Attempted, but blocked by `429 Resource Exhausted`.
+- **Gemini-Flash-Latest**: Verified as working.
 
 ### Current Hypothesis
-- The installed `youtube-transcript-api` (v1.2.4) requires **instantiation** (`api = YouTubeTranscriptApi()`) rather than static calls for `fetch` or `list` methods based on the `dir()` inspection.
-- There may be a shadowing issue where the module and the class share the same name.
+- Using a clean `frontend/` directory with a standalone `package.json` will prevent package management conflicts with the Python backend.
 
 ### Files of Interest
-- `backend/app/core/ingestion.py`: Needs update to new API call syntax.
-- `verify_ingestion.py`: Standalone script created for debugging.
+- `backend/app/core/rag_chain.py`: Current RAG logic.
+- `.gsd/ROADMAP.md`: Path ahead.
 
 ## Next Steps
-1. Refactor `ingestion.py` to instantiate `YouTubeTranscriptApi()` before calling methods.
-2. Verify ingestion using `verify_ingestion.py`.
-3. Clear port 8000 and restart FastAPI server.
-4. Perform final verification of Phase 1.
-5. Proceed to Phase 2: Premium Dashboard (Frontend).
+1. Create `/frontend` directory.
+2. Run `npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm --yes`.
+3. Initialize Shadcn UI in the frontend.
+4. Design the dashboard shell with glassmorphism and sidebar.

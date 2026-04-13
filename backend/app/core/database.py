@@ -3,11 +3,13 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import declarative_base
 
 # Ensure the storage directory exists
-STORAGE_PATH = "backend/storage"
+BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+STORAGE_PATH = os.path.join(BACKEND_DIR, "storage")
+
 if not os.path.exists(STORAGE_PATH):
     os.makedirs(STORAGE_PATH)
 
-DATABASE_URL = f"sqlite+aiosqlite:///{STORAGE_PATH}/chatbot.db"
+DATABASE_URL = f"sqlite+aiosqlite:///{STORAGE_PATH.replace('\\', '/')}/chatbot.db"
 
 engine = create_async_engine(DATABASE_URL, echo=False)
 AsyncSessionLocal = async_sessionmaker(

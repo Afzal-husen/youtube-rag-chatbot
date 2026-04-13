@@ -62,6 +62,7 @@ async def process_url(request: ProcessUrlRequest, db: AsyncSession = Depends(get
             message="Video indexed and session saved."
         )
     except Exception as e:
+        traceback.print_exc()
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 

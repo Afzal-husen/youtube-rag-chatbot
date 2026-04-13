@@ -5,8 +5,15 @@ from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
 class VectorStoreManager:
-    def __init__(self, storage_path: str = "backend/storage"):
-        self.storage_path = storage_path
+    def __init__(self, storage_path: Optional[str] = None):
+        if storage_path is None:
+            # Default to backend/storage relative to project root
+            # or just storage if running from backend dir
+            backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            self.storage_path = os.path.join(backend_dir, "storage")
+        else:
+            self.storage_path = storage_path
+            
         # Hardcoding the embedding model for consistency between save/load
         self.embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2",

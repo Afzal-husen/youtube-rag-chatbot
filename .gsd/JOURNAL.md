@@ -1,27 +1,27 @@
 # JOURNAL.md
 
-## Session: 2026-04-13 20:53
+## Session: 2026-04-13 20:25
 
 ### Objective
-Complete Phase 4: Persistence & History.
+Complete Phase 3 (Streaming/Citations) and Phase 4 (Persistence/History).
 
 ### Accomplished
-- ✅ Installed SQLAlchemy and aiosqlite for async database support.
-- ✅ Implemented `VideoSession` and `ChatMessage` DB models.
-- ✅ Added AI-powered auto-naming for new sessions.
-- ✅ Built history management UI (Rename/Delete) in the Sidebar.
-- ✅ Verified disk cleanup (FAISS deletion) works correctly on session delete.
-- ✅ Resolved `asChild` vs `render` prop conflict in `@base-ui` components.
+- ✅ High-performance streaming chat with typewriter effect.
+- ✅ Automated source citations with timestamps.
+- ✅ SQLite database integration for cross-session memory.
+- ✅ AI-powered catchy session titles.
+- ✅ Professional sidebar with Rename/Delete/Storage management.
+- ✅ Full production build verification (npm run build).
 
 ### Verification
-- [x] Production build success.
-- [x] Indexed 2 videos and verified they appear in the history after refresh.
-- [x] Renamed a session and verified it persisted in SQLite.
-- [x] Deleted a session and verified `backend/storage/faiss_...` was removed.
+- [x] Backend API endpoints (CRUD history) verified.
+- [x] Frontend Build Success (no TS/Lint errors).
+- [x] Disk cleanup verified on session deletion.
 
 ### Paused Because
-Phase Completion.
+System handoff/Pause request.
 
 ### Handoff Notes
-The app is now a fully functional, persistent product. It has "Memory". 
-**Next Goal**: Phase 5 is for Polish and Deployment. We need to make it easy for others to run (Docker) and give it the final high-end polish.
+The tool is now a real product. Users can index videos, chat with them in real-time, see citations, and find their past work in the sidebar. 
+**Phase 5 (Next)**: Focuses on "Packaging". We need Docker and a great README to make this a top-tier open source project.
+The user wants to ensure Docker persists the `storage/` folder.

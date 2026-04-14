@@ -1,4 +1,11 @@
 import os
+import sys
+from pathlib import Path
+
+# Add the backend directory to sys.path to allow imports like 'from app...'
+backend_root = Path(__file__).parent.parent
+if str(backend_root) not in sys.path:
+    sys.path.append(str(backend_root))
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 

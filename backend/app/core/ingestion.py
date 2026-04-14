@@ -1,14 +1,12 @@
 from typing import List, Dict, Any
-import youtube_transcript_api
+from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
 class IngestionManager:
-    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 150):
-        self.splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size, 
-            chunk_overlap=chunk_overlap
-        )
+    def __init__(self, chunk_size: int = 1000, chunk_overlap_ratio: float = 0.15):
+        self.chunk_size = chunk_size
+        self.chunk_overlap = int(chunk_size * chunk_overlap_ratio)
 
     @staticmethod
     def extract_video_id(url: str) -> str:
@@ -23,31 +21,52 @@ class IngestionManager:
 
     def load_and_split(self, url: str) -> List[Document]:
         """
-        Loads the transcript for a video and splits it into chunks.
-        Preserves segment-level metadata (timestamps).
+        Loads and groups transcript segments into larger, overlapping chunks.
+        This provides much better context for the RAG LLM than individual segments.
         """
         video_id = self.extract_video_id(url)
         try:
-            api = youtube_transcript_api.YouTubeTranscriptApi()
+            api = YouTubeTranscriptApi()
             transcript_list = api.fetch(video_id)
             
-            # Create a list of documents, one for each segment
-            # This ensures that when we split, each chunk retains the timestamp metadata
-            documents = [
-                Document(
-                    page_content=item.text,
-                    metadata={
-                        "source": video_id, 
-                        "url": url,
-                        "start": item.start,
-                        "duration": item.duration
-                    }
-                )
-                for item in transcript_list
-            ]
+            chunks = []
+            current_text = ""
+            current_start = None
             
-            # Split into chunks (LangChain splitters preserve metadata)
-            chunks = self.splitter.split_documents(documents)
+            for segment in transcript_list:
+                if current_start is None:
+                    current_start = segment.start
+                
+                current_text += segment.text + " "
+                
+                # If we've accumulated enough text, create a chunk
+                if len(current_text) >= self.chunk_size:
+                    chunks.append(Document(
+                        page_content=current_text.strip(),
+                        metadata={
+                            "source": video_id, 
+                            "url": url,
+                            "start": current_start,
+                            "duration": segment.start + segment.duration - current_start
+                        }
+                    ))
+                    # Handle overlap: keep a portion of the end for the next chunk
+                    current_text = current_text[-self.chunk_overlap:]
+                    # Reset start time (it will be set by the next segment in the loop)
+                    current_start = None 
+
+            # Add the final partial chunk if any
+            if current_text.strip():
+                chunks.append(Document(
+                    page_content=current_text.strip(),
+                    metadata={
+                        "source": video_id,
+                        "url": url,
+                        "start": current_start or 0.0,
+                        "duration": transcript_list[-1].start + transcript_list[-1].duration - (current_start or 0.0)
+                    }
+                ))
+
             return chunks
         except Exception as e:
             raise Exception(f"Failed to fetch transcript: {str(e)}")

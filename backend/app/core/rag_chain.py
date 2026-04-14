@@ -14,9 +14,9 @@ class RAGChainManager:
     def __init__(self, model_name: str = GROQ_MODELS["fast"]):
         self.default_model_name = model_name
         self.prompt = PromptTemplate(
-            template="""You are a helpful assistant.
-Answer ONLY from the provided transcript context.
-If the context is insufficient, just say "I don't know based on the video content."
+            template="""You are a world-class insights assistant analyzing a YouTube video transcript.
+Use the provided transcript context to answer the user's question in a helpful and detailed manner.
+If the context does not contain the answer, you can briefly use your general knowledge but MUST clearly state that the information was NOT found in the video.
 
 Context: {context}
 Question: {question}
@@ -38,11 +38,19 @@ Answer:""",
 
     def get_chain(self, retriever, model_name: str = None):
         """
-        Returns a RunnableParallel chain that outputs {'answer': str, 'docs': list}.
-        Supports real-time streaming of the 'answer' field.
+        Returns a chain that retrieves docs and generates an answer.
+        Input: str (the question)
+        Output: dict {'answer': str, 'docs': list}
         """
         model = self._get_model(model_name)
 
+        # 1. Retrieval + Question Passthrough
+        setup_and_retrieval = RunnableParallel({
+            "docs": retriever,
+            "question": RunnablePassthrough()
+        })
+
+        # 2. Answer Generation
         answer_chain = (
             RunnablePassthrough.assign(
                 context=lambda x: self.format_docs(x["docs"])
@@ -52,7 +60,8 @@ Answer:""",
             | self.parser
         )
 
-        return RunnableParallel({
+        # 3. Final Parallel Output
+        return setup_and_retrieval | RunnableParallel({
             "answer": answer_chain,
             "docs": lambda x: x["docs"]
         })

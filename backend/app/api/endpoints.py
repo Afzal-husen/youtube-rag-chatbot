@@ -78,22 +78,25 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
         
         result = await chain.ainvoke(request.question)
         
-        sources = [
+        sources = result["docs"] # documents are already in result
+        
+        # Format sources for response
+        formatted_sources = [
             {"content": doc.page_content, "metadata": doc.metadata} 
-            for doc in result["docs"]
+            for doc in sources
         ]
 
         print(sources)
         
         # Persist messages
         user_msg = ChatMessage(video_id=request.video_id, role="user", content=request.question)
-        ai_msg = ChatMessage(video_id=request.video_id, role="assistant", content=result["answer"], sources=sources)
+        ai_msg = ChatMessage(video_id=request.video_id, role="assistant", content=result["answer"], sources=formatted_sources)
         db.add_all([user_msg, ai_msg])
         await db.commit()
         
         return ChatResponse(
             answer=result["answer"],
-            source_documents=sources
+            source_documents=formatted_sources
         )
     except Exception as e:
         await db.rollback()
@@ -109,17 +112,8 @@ async def chat_stream(request: ChatRequest, db: AsyncSession = Depends(get_db)):
         sources = []
         try:
             vector_store = vector_mgr.load_index(request.video_id)
-            retriever = vector_store.as_retriever(search_kwargs={"k": 4})
+            retriever = vector_store.as_retriever(search_kwargs={"k": 8})
             chain = rag_mgr.get_chain(retriever, model_name=request.model_name)
-
-            # Sources first
-            source_docs = await retriever.ainvoke(request.question)
-            sources = [
-                {"content": doc.page_content, "metadata": doc.metadata} 
-                for doc in source_docs
-            ]
-            print(sources)
-            yield f"data: {json.dumps({'type': 'sources', 'data': sources})}\n\n"
 
             # Stream answer
             async for chunk in chain.astream(request.question):
@@ -127,6 +121,13 @@ async def chat_stream(request: ChatRequest, db: AsyncSession = Depends(get_db)):
                     batch = chunk['answer']
                     full_answer += batch
                     yield f"data: {json.dumps({'type': 'chunk', 'data': batch})}\n\n"
+                elif "docs" in chunk and not sources:
+                    # Capture sources if they come through the stream
+                    sources = [
+                        {"content": doc.page_content, "metadata": doc.metadata} 
+                        for doc in chunk["docs"]
+                    ]
+                    yield f"data: {json.dumps({'type': 'sources', 'data': sources})}\n\n"
             
             # Persist to DB once complete
             user_msg = ChatMessage(video_id=request.video_id, role="user", content=request.question)

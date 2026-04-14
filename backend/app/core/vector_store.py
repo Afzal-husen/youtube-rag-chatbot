@@ -7,18 +7,22 @@ from langchain_huggingface import HuggingFaceEmbeddings
 class VectorStoreManager:
     def __init__(self, storage_path: Optional[str] = None):
         if storage_path is None:
-            # Default to backend/storage relative to project root
-            # or just storage if running from backend dir
             backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
             self.storage_path = os.path.join(backend_dir, "storage")
         else:
             self.storage_path = storage_path
-            
-        # Hardcoding the embedding model for consistency between save/load
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            cache_folder=os.environ.get("HF_HOME", "D:/huggingface_cache")
-        )
+        
+        self._embeddings = None
+
+    @property
+    def embeddings(self):
+        if self._embeddings is None:
+            print("Initializing HuggingFaceEmbeddings (First load)...")
+            self._embeddings = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-MiniLM-L6-v2",
+                cache_folder=os.environ.get("HF_HOME", "D:/huggingface_cache")
+            )
+        return self._embeddings
 
     def get_index_path(self, video_id: str) -> str:
         """

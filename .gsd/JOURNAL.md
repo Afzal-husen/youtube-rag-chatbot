@@ -1,25 +1,25 @@
 # JOURNAL.md
 
-## Session: 2026-04-13 20:49
+## Session: 2026-04-14 10:07
 
 ### Objective
-Finalize Phase 4 and verify via Testing.
+Resolve critical RAG response failure (empty answers) and improve UI/UX.
 
 ### Accomplished
-- ✅ Fixed nested directory bug (`backend/backend/storage`).
-- ✅ Implemented absolute storage path resolution in `database.py` and `vector_store.py`.
-- ✅ Resolved 500 error in `/api/process-url` caused by old server instances (Port cleanup).
-- ✅ Verified backend responsiveness via Swagger UI testing.
-- ✅ Successfully implemented AI-powered session naming on ingest.
+- ✅ Fixed "Context Starvation" bug by implementing manual segment grouping (Dense Chunking) in `ingestion.py`.
+- ✅ Corrected RAG chain logic in `rag_chain.py` to handle raw string inputs.
+- ✅ Optimized Backend startup time (Lazy loading embeddings property).
+- ✅ Fixed Chat UI scrolling and unresponsive input interaction.
+- ✅ Resolved `frontend` submodule issue (converted to regular directory for easier management).
+- ✅ Committed all backend and frontend fixes to `main` branch.
 
 ### Verification
-- [x] Backend routes for history, rename, and delete are present in OpenAPI spec.
-- [x] Pathing issue resolved (redundant folders deleted).
-- [ ] UI side-effects of slow backend startup need optimization in Phase 5.
+- [x] Verified chunks are ~1000 characters in `debug_index.py`.
+- [x] Verified successful retrieval and chain flow with diagnostic scripts.
+- [x] Verified UI scrolling and input states in browser.
 
 ### Paused Because
-Session limit / End of phase.
+Session objective complete. Readiness for Phase 5 (Deployment).
 
 ### Handoff Notes
-Persistence is working! You can now see your sessions in the sidebar. Note: Backend startup takes ~45s because of model imports. Do not be alarmed if the first request is slow. 
-**Next Goal**: Phase 5 is for Dockerization and Final Polish.
+The system is now robust! Responses are detailed and grounded. The repo is also cleaner as `frontend` is now a standard directory. Remember to `git push` before starting deployment work.
